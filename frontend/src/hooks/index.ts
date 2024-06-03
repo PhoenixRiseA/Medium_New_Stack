@@ -10,7 +10,7 @@ export const useBlogs = () => {
     useEffect(()=>{
         axios.get(`${BACKEND_URL}/api/v1/blog/bulk`,{
             headers:{
-                Authorization: localStorage.getItem("token")
+                Authorization: sessionStorage.getItem("token")
             }
         }).then((res)=>{
             setBlogs(res.data.blogs);
@@ -31,7 +31,7 @@ export const useBlog = (id:number) => {
     useEffect(()=>{
         axios.get(`${BACKEND_URL}/api/v1/blog/${id}`,{
             headers:{
-                Authorization: localStorage.getItem("token")
+                Authorization: sessionStorage.getItem("token")
             }
         }).then((res)=>{
             setBlog(res.data.blog);

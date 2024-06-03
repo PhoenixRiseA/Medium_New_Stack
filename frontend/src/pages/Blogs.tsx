@@ -3,8 +3,9 @@ import { BlogCard } from '../components/BlogCard'
 import { AppBar } from '../components/AppBar'
 import { useBlogs } from '../hooks'
 import { BlogSkeleton } from '../components/BlogSkeleton';
-export const Blogs = () => {
+const Blogs = () => {
     const { loading, blogs } = useBlogs();
+
     if (loading) {
         return <>
             <AppBar />
@@ -21,22 +22,24 @@ export const Blogs = () => {
         </>
     }
     return (
-        <div>
+        <div className=' h-screen'>
             <AppBar />
             <div className=' flex justify-center'>
                 <div >
-                    {blogs && blogs.map((blog, index) => {
+                    {blogs.length > 0 ?  blogs.map((blog, index) => {
                         return <div key={`blog${index}`}>
                             <BlogCard
                                 {...blog}
                                 publishedDate='22nd Feb, 2024'
                             />
                         </div>
-                    })}
-
+                    }) : <div>Be the first to blog away</div>}
+                 
                 </div>
+
             </div>
         </div>
 
     )
 }
+export default Blogs;

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate'
-import { verify } from 'hono/jwt';
+import { verify, decode } from 'hono/jwt';
 import { createBlogInput, updateBlogInput } from "@jsnote-gearless-joe/medium-common";
 export const blogRouter = new Hono<{
     Bindings: {
@@ -71,6 +71,7 @@ export const blogRouter = new Hono<{
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
+    const authorId = c.get('userId');
     const blog = await prisma.blog.update({
         where:{
             id: body.id
@@ -78,7 +79,7 @@ export const blogRouter = new Hono<{
         data: {
             title: body.title,
             content: body.content,
-            authorId: 1,
+            authorId: Number( authorId),
             thumbnail: body?.thumbnail
         }
     })
@@ -131,7 +132,8 @@ export const blogRouter = new Hono<{
                         name: true,
 
                     }
-                }
+                },
+                authorId: true
             }
     
         })
@@ -156,3 +158,54 @@ export const blogRouter = new Hono<{
 
   });
 
+  blogRouter.delete('/:id',async (c) => {
+    const id = await c.req.param("id");
+    const authorId = c.get('userId');
+    
+    console.log(authorId);
+    const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        const blogAuthorId = await prisma.blog.findFirst({
+            where: {
+                id: Number(id)
+            },
+            select: {
+                authorId: true
+            }
+        })
+        if(Number(authorId) !== blogAuthorId?.authorId){
+            c.status(404);
+            return c.json({
+                message: "Only the author can delete their blog"
+            })
+        }
+        console.log(authorId, blogAuthorId)
+        const deletedBlog = await prisma.blog.delete({
+            where:{
+                id: Number(id)
+            }
+        })
+
+        if(deletedBlog){
+            return c.json({
+                deletedBlog
+             })
+        }else{
+            c.status(404);
+            return c.json({
+                message: "Blog not found"
+            })
+        }
+
+     
+    } catch (error) {
+        c.status(411); //4
+        console.log(error);
+        return c.json({
+            message: error
+        })
+    }
+
+  });

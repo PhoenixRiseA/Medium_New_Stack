@@ -1,0 +1,12 @@
+.DraftEditor-root{
+  min-height: 30vh;
+  max-height: 70vh;
+  margin-bottom: 4px;
+  border-width: 2px;
+  border-color: rgb(209 213 219 );
+  margin: 2px;
+}
+
+.public-DraftEditorPlaceholder-inner{
+  font-size: large;
+}

@@ -1,7 +1,10 @@
-import { CreateEditBlog } from "../components/CreateEditBlog"
+import {  MemoizedCreateEditBlog } from "../components/CreateEditBlog"
 
-export const Publish = () => {
+const Publish = () => {
     return <>
-        <CreateEditBlog/>
+        <MemoizedCreateEditBlog/>
     </>
+
 }
+
+export default Publish;

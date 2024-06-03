@@ -1,1 +1,1 @@
-export const BACKEND_URL = "https://week-13.sailalith1993.workers.dev"
+export const BACKEND_URL = ""

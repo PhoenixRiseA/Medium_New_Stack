@@ -1,7 +1,10 @@
 import { AppBar } from "./AppBar"
-import { Avatar, BlogCardProps } from "./BlogCard"
+import { Avatar, BlogCardProps } from "./BlogCard";
+import { convertFromRaw } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
 export const BlogComponent = ({ blog }: { blog: BlogCardProps }) => {
-
+    const contentState = convertFromRaw(JSON.parse(blog.content));
+    const html = stateToHTML(contentState);
     return <div>
         <AppBar />
         <div className="flex justify-center">
@@ -9,7 +12,7 @@ export const BlogComponent = ({ blog }: { blog: BlogCardProps }) => {
                 <div className="  col-span-8">
                     <div className="text-2xl font-extrabold">{blog.title} </div>
                     <div className=" text-gray-500 pb-3">Posted on Aughust 24,2023</div>
-                    <div className="text-sm">{blog.content}</div>
+                    <div className="text-sm" dangerouslySetInnerHTML={{ __html: html }}/>
                 </div>
                 <div className="col-span-4">
                     <div className=" font-semibold text-lg pb-4 text-slate-500">{ "Author"}</div>
