@@ -8,7 +8,8 @@ import { CreateBlogInput } from "@jsnote-gearless-joe/medium-common";
 import { RichTextEditor } from "./RichTextEditor/RichTextEditor";
 
 import { EditorState,  convertToRaw } from 'draft-js';
-
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 export const  CreateEditBlog = () => {
     const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
@@ -25,12 +26,17 @@ export const  CreateEditBlog = () => {
         })
     };
     const publishHandler:()=>void = async () =>{
-       const response = await axios.post(`${BACKEND_URL}/api/v1/blog`,{...input,content:JSON.stringify(convertToRaw(editorState.getCurrentContent())) },{
-            headers:{
-                Authorization: sessionStorage.getItem('token')
-            }
-        });
-        navigate(`/blog/${response.data.id}`)
+        try {
+            const response = await axios.post(`${BACKEND_URL}/api/v1/blog`,{...input,content:JSON.stringify(convertToRaw(editorState.getCurrentContent())) },{
+                headers:{
+                    Authorization: sessionStorage.getItem('token')
+                }
+            });
+            navigate(`/blog/${response.data.id}`)   
+        } catch (error:any) {
+            toast.error(error?.response.data)
+        }
+
     };
     const handleEditorChange = (newEditorState: EditorState) => {
         setEditorState(newEditorState);
@@ -38,6 +44,7 @@ export const  CreateEditBlog = () => {
 
    
     return <div>
+        <ToastContainer/>
         <AppBar />
         <div className="flex justify-center  pt-8">
             <div className=" max-w-screen-lg w-full" >

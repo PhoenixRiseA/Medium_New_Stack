@@ -1,5 +1,5 @@
 import { SignupInput } from "@jsnote-gearless-joe/medium-common";
-import { ChangeEvent, forwardRef, useEffect, useRef } from "react";
+import { ChangeEvent, forwardRef, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { debounce } from "../utils";
@@ -61,7 +61,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
                     return { ...state, username: e.target.value }
                 })
             }, 500)} />
-            <LabelledInput key={'password'} type={"password"} label={"Password"} placeholder={"*********"} onChange={debounce((e: ChangeEvent<HTMLInputElement>) => {
+            <LabelledInput key={'password'}  label={"Password"} placeholder={"*********"} onChange={debounce((e: ChangeEvent<HTMLInputElement>) => {
                 setPostInputs((state) => {
                     return { ...state, password: e.target.value }
                 })
@@ -85,7 +85,7 @@ interface LabelledInputType {
 
 
 }
-const LabelledInput = forwardRef<HTMLInputElement, LabelledInputType>( ({ label, onChange, placeholder, type = "text",  }, ref ) => {
+const LabelledInput = forwardRef<HTMLInputElement, LabelledInputType>( ({ label, onChange, placeholder,  }, ref ) => {
     return <div className="min-w-80 pt-6">
 
         <label className="    font-semibold block mb-2 text-sm  text-gray-900 dark:text-white">{label}</label>
