@@ -161,8 +161,6 @@ export const blogRouter = new Hono<{
   blogRouter.delete('/:id',async (c) => {
     const id = await c.req.param("id");
     const authorId = c.get('userId');
-    
-    console.log(authorId);
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
@@ -181,7 +179,6 @@ export const blogRouter = new Hono<{
                 message: "Only the author can delete their blog"
             })
         }
-        console.log(authorId, blogAuthorId)
         const deletedBlog = await prisma.blog.delete({
             where:{
                 id: Number(id)
@@ -202,7 +199,6 @@ export const blogRouter = new Hono<{
      
     } catch (error) {
         c.status(411); //4
-        console.log(error);
         return c.json({
             message: error
         })

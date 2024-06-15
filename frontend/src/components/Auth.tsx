@@ -1,5 +1,5 @@
 import { SignupInput } from "@jsnote-gearless-joe/medium-common";
-import { ChangeEvent } from "react";
+import { ChangeEvent, forwardRef, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { debounce } from "../utils";
@@ -8,21 +8,29 @@ import { BACKEND_URL } from '../config';
 import { Spinner } from "./Spinner";
 import { useSetRecoilState } from "recoil";
 import { authState } from "../store/atoms/authState";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     const setIsAuthticated = useSetRecoilState(authState);
     const navigate = useNavigate();
-    const nameEle = document.getElementById("Name") as HTMLInputElement;
-    const usernameEle = document.getElementById("Username") as HTMLInputElement;
-    const passwordEle = document.getElementById("Password") as HTMLInputElement;
+    const usernameRef = useRef<HTMLInputElement>(null);
+
     const [postInputs, setPostInputs] = useState<SignupInput>({
-        name: nameEle?.value || '',
-        username: usernameEle?.value || "",
-        password: passwordEle?.value || ""
+        name: '',
+        username: "",
+        password: ""
     });
     const [loading, setLoading] = useState(false);
 
     async function sendRequest() {
         setLoading(true);
+        if(type === 'signin'){
+            if(postInputs.username.length === 0 || postInputs.password.length === 0){
+                toast.error("Enter Valid Inputs");
+                setLoading(false);
+                return;
+            }
+        }
         try {
             const response = await axios.post(`${BACKEND_URL}/api/v1/user/${type === 'signup' ? "signup" : "signin"}`, { ...postInputs });
             setLoading(false);
@@ -30,13 +38,14 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
             sessionStorage.setItem("token", jwt);
             setIsAuthticated(true)
             navigate('/blogs')
-        } catch (error) {
+        } catch (error:any ) {
             setLoading(false)
-            console.log(error);
+            toast.error(error.response.data)
         }
 
     }
     return <div className="h-screen flex flex-col justify-center " >
+        <ToastContainer />
         <div className="text-center text-3xl font-extrabold">
             {type === "signup" ? "Create an account" : "Welcome!"}
         </div>
@@ -47,8 +56,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
             </Link>
         </div>
         <div className=" min-w-40 flex flex-col justify-center   items-center ">
-            <LabelledInput key={'username'} label={"Username"} placeholder={"Lalith_rocks@gmail.com"} onChange={debounce((e: ChangeEvent<HTMLInputElement>) => {
-                console.log("triggered");
+            <LabelledInput ref={usernameRef}  key={'username'} label={"Username"} placeholder={"Lalith_rocks@gmail.com"} onChange={debounce((e: ChangeEvent<HTMLInputElement>) => {
                 setPostInputs((state) => {
                     return { ...state, username: e.target.value }
                 })
@@ -74,10 +82,13 @@ interface LabelledInputType {
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     placeholder: string;
     type?: string;
+
+
 }
-function LabelledInput({ label, onChange, placeholder, type = "text" }: LabelledInputType) {
+const LabelledInput = forwardRef<HTMLInputElement, LabelledInputType>( ({ label, onChange, placeholder, type = "text",  }, ref ) => {
     return <div className="min-w-80 pt-6">
+
         <label className="    font-semibold block mb-2 text-sm  text-gray-900 dark:text-white">{label}</label>
-        <input autoComplete="off" onChange={onChange} type={type} id={label} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={placeholder} required />
+        <input ref={ref}  onChange={onChange}  id={label} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder={placeholder} required />
     </div>
-}
+});

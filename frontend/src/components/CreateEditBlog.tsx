@@ -24,7 +24,7 @@ export const  CreateEditBlog = () => {
             return { ...state, title: e.target.value }
         })
     };
-    const publishHandler = async () =>{
+    const publishHandler:()=>void = async () =>{
        const response = await axios.post(`${BACKEND_URL}/api/v1/blog`,{...input,content:JSON.stringify(convertToRaw(editorState.getCurrentContent())) },{
             headers:{
                 Authorization: sessionStorage.getItem('token')

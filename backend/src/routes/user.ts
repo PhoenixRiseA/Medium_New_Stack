@@ -33,7 +33,6 @@ userRouter.post('/signup',async (c) => {
        }, c.env.JWT_SECRET);
        return c.text(jwt);
      } catch (error) {
-       console.log(error);
        c.status(411);
        return c.text("invalid")
      }
@@ -68,7 +67,6 @@ userRouter.post('/signup',async (c) => {
        }
    
      } catch (error) {
-       console.log(error);
        c.status(411);
        return c.text("invalid")
      }
